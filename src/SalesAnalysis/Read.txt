@@ -1,0 +1,101 @@
+https://gist.githubusercontent.com/Roshkapel/87f3f6bcb72fdef079afb5aa5c3831af/raw/fa46fe115679c162727274c714f321593e8258d3/salesNumbers.csv
+
+Additional NOtes for Papaparse
+
+
+
+// // const width = 1100;
+// // const height = 500;
+// // const margin = {top: 20, right: 0, bottom: 20, left: 350};
+// // const innerHeight = height - margin.top - margin.bottom;
+// // const innerWidth = width - margin.left -  margin.right;
+
+// const label = document.getElementById('highlight');
+// const highlightButton = document.getElementById('showMe');
+// let newData;
+
+// const highlightData = "https://gist.githubusercontent.com/Roshkapel/624576680ebfb97f01660d9af7a99179/raw/5f954587b95c2373c9c64e8b954125ca68a06549/SalesData.csv";
+
+//   // Function to handle CSV data
+//   function handleCSVData(data) {
+//     // Parse CSV data into an array
+//     // eslint-disable-next-line no-undef
+//     Papa.parse(data, {
+//         header: true, // Assumes the first row contains headers
+//         dynamicTyping: true, // Converts numeric values to numbers
+//         complete: function(results) {
+//             // The parsed data is available in results.data
+            
+           
+//             const dataArray = results.data;
+//             console.log(dataArray);
+//             // Now you can use the dataArray as needed 
+//           newData = dataArray.slice(100,101)
+          
+//           // label.innerHTML =  isInvalidInput(highlightData)
+//           label.innerHTML =  JSON.stringify(newData)
+          
+          
+//         }
+
+//     });
+// }
+
+// // Fetch CSV data
+// fetch(highlightData)
+//     .then(response => response.text())
+//     .then(handleCSVData)
+//     .catch(error => console.error('Error fetching CSV file:', error));
+
+
+//     function isInvalidInput(str) {
+//       const regex = /\d+/g
+//       return (
+//         str.match(regex)
+//       )
+//   }
+
+
+
+
+
+// //WE ARE GOING TO CREATE A FUNCTION SO WE CAN ACCESS THESE ATTRIBUTES PROGRAMMATICALLY
+// const items = [
+//   {value: 'Trading As', label:'Trading As'},
+//   {value: 'Volume 2022', label:'Volumes 2022'},
+//   {value: 'Revenue 2023', label:'Revenue 2023'},
+//   {value: 'Volumes 2023', label:'Volumes 2023'},
+//   {value: 'species', label:'Species'}
+// ]
+
+// function parseCSV() {
+//   const fileInput = document.getElementById("upload");
+//   const file = fileInput.files[0];
+//   const textType = /text.*/;
+//   const csvType = "text/csv"; // Correct MIME type for CSV files
+
+//   if (file.type.match(csvType)) {
+//     const reader = new FileReader();
+//     reader.onload = function (e) {
+//       const csvData = reader.result;
+//       const rows = csvData.split("\n"); // Split into lines
+//       const dataArray = rows.map((row) => row.split(",")); // Split each column
+//       console.log(dataArray); // Your CSV data as an array
+//     };
+//     reader.readAsText(file);
+//   } else {
+//     document.getElementById("highlight").innerText =
+//       "File not supported!";
+//   }
+// }
+
+// highlightButton.addEventListener('click', parseCSV);
+// const showData = window.dataArray;
+// console.log('hello');
+// console.log(showData);
+
+
+
+
+
+

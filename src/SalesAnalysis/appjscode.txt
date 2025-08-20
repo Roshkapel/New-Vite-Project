@@ -1,0 +1,233 @@
+import React, {useState, useCallback, useEffect} from "react";
+import * as d3 from "d3";
+import Dropdown from 'react-dropdown';
+import { useData } from "../Chart Components/useData";
+import { AxisBottom } from "../Chart Components/AxisBottom";
+import { YAxis } from "../Chart Components/Y-Axis";
+import { Marks } from "../Chart Components/Marks";
+import {ColorLegend} from "../Chart Components/ColorLegend";
+// import { Dropdown } from "../MenuComponents/Dropdown";
+// import {Message} from "../Components/Message";
+// import ReactDropdown from "react-dropdown-select";
+
+// console.log(d3);
+// console.log(Dropdown);
+
+//NOTE WHERE WE DONLOADED NPM REACTDROPDOWN AND INSTALLED IT LOCALLY, WE CAN ACTUALLY USE IT IN PLACE OF OUR ORIGINAL DROPDOWN
+//DO THIS BY USING THE TAG <ReactDropdown>
+
+// const csvUrl = "https://gist.githubusercontent.com/Roshkapel/bf867d73d8014163ad4519f8148eff74/raw/cssNameColors.csv";
+
+const width = 960;
+const height = 500;
+const margin = {top: 30, right: 200, bottom: 65, left: 120};
+
+
+const xAxisLabelOffset = 30; //SET A NEW VARIABLE TO MANIPULATE X-AXIS
+const yAxisLabelOffset = 40;
+
+const fadeOpacity = 0.2;
+
+//WE ARE GOING TO CREATE A FUNCTION SO WE CAN ACCESS THESE ATTRIBUTES PROGRAMMATICALLY
+const attributes = [
+  {value: 'sepal_length', label:'Sepal Length'},
+  {value: 'sepal_width', label:'Sepal Width'},
+  {value: 'petal_length', label:'Petal Length'},
+  {value: 'petal_width', label:'Petal Width'},
+  {value: 'species', label:'Species'}
+]
+////THIS FUNCTION WILL TAKE AS INPUT A VALUE AND RETURN A LABEL
+const getLabel = value => {
+  for(let i = 0; i < attributes.length; i++) {
+   if(attributes[i].value === value){
+    return attributes[i].label;
+   }
+  }
+};
+
+
+const App = () => { 
+  const data = useData();
+  const [hoveredValue, setHoveredValue] = useState(null);
+  
+  
+  //Logic for X (MENU)
+  const initialXAttribute = 'petal_length';
+  const [xAttribute, setXAttribute] = useState(initialXAttribute);
+  const xValue = d => d[xAttribute];
+  const xAxisLabel = getLabel(xAttribute);
+
+    //Logic for Y (MENU)
+  const initialYAttribute = 'sepal_width';
+  const [yAttribute, setYAttribute] = useState(initialYAttribute);
+  const yValue = d => d[yAttribute];
+  const yAxisLabel = getLabel(yAttribute);
+
+    
+  
+  if(!data) {
+    return <pre>Loading...</pre>
+  }
+
+  // console.log(data.columns); //ALWAYS USE YOUR CONSOLE LOG TO SEE WHAT KIND OF DATA YOU HAVE TO USE AS ATTRIBUTES FOR YOUR OPTIONS
+
+  const innerHeight = height - margin.top - margin.bottom;
+  const innerWidth = width - margin.left -  margin.right;
+
+  const colorValue = d => d.species;
+  const colorLegendLabel = 'Species';
+
+  const filteredData = data.filter(d => hoveredValue === colorValue(d));  //[data.filter] is a Built in Filter Method 
+
+  const circleRadius = 7;
+
+  // const yValue = d => d.sepal_width;
+  // const yAxisLabel = 'Sepal Width';
+
+  const SiFormat = d3.format('.2s');
+  const xAxisTickFormat = tickValue => SiFormat(tickValue).replace('G', 'B');
+
+  // console.log(data.columns);
+  
+  const xScale = d3.scaleLinear()
+    .domain(d3.extent(data, xValue)) 
+    .range([0, innerWidth])
+    .nice();
+
+  const yScale = d3.scaleLinear()
+  .domain(d3.extent(data, yValue))   
+  .range([0, innerHeight]);
+
+  //NOTE HOW DATA IS MAPPED USING scaleOrdinal THE DOMAIN IS SET DIFFERENTLY WE HAVE TO CHECK OUR ATTRIBUTES TO SEE WHAT WE ARE MAPPING
+  //THIS IS ESSENTIALLY A FUNCTION THAT TAKES AS INPUT A VALUE FROM THE DOMAIN AND RETURNS A COLOUR FORM TE RANGE PROVIDED
+  // SO WE CAN UE THE DOMAIN FORM THE COLORSCALE TO ACCESS THE LIST OF COLOURS OF THE SPECIES FOR THE LEGEND
+  const colorScale = d3.scaleOrdinal()
+    .domain(data.map(colorValue))
+    .range(['#E6842A', '#137B80', '#8E6C8A']); //REFER TO GOOGLE OR DATA COLORS [sunlight foundation] TO FIND COLORS TO USE
+    console.log(colorScale.domain());
+
+    
+     
+  return (
+    <>
+        
+      <div className="newDropdown">          
+        <div className="X-Axis">
+        <span className="dropdown-label">X-Axis</span>
+              <Dropdown
+                options={attributes} 
+                value ={xAttribute} 
+                onChange = {({value}) => setXAttribute(value)} 
+            
+              />
+        </div>
+
+          <div className="Y-Axis">
+            <span className="dropdown-label">Y-Axis</span>
+              <Dropdown
+                options={attributes} 
+                value ={yAttribute} 
+                onChange = {({value}) => setYAttribute(value)}
+              />
+          </div>
+      </div>
+ 
+     <div style={{display: 'flex', justifyContent: 'center' }}>
+        <svg width={width} height={height}>
+
+          <g transform={`translate(${margin.left}, ${margin.top})`}>
+
+              <AxisBottom 
+                xScale={xScale} 
+                innerHeight={innerHeight}
+                tickFormat={xAxisTickFormat}
+                tickOffset={5}
+                  />
+                  
+              <text className = "axis-Label"
+
+                textAnchor="middle"
+                transform={`translate(${-yAxisLabelOffset}, ${innerHeight / 2}) rotate(-90)`}
+                > 
+                {yAxisLabel}
+              </text> 
+
+              <YAxis
+                yScale={yScale} 
+                innerWidth={innerWidth}
+                tickOffset={5}
+                />
+              
+              <text className = "axis-Label" 
+                x={innerWidth / 2}
+                y={innerHeight + xAxisLabelOffset + 20} 
+                textAnchor="middle"> 
+                {xAxisLabel}
+              </text> 
+              <g transform={`translate(${innerWidth + 60}, 60)`}>
+                <text className="axis-Label"
+                 textAnchor="middle"
+                 x={35}
+                 y={-25}
+                 >
+                   {colorLegendLabel}
+                 </text>
+                <ColorLegend 
+                  tickSpacing={22}
+                  tickTextOffset={12}
+                  tickSize={circleRadius}
+                  colorScale={colorScale}
+                  onHover={setHoveredValue}
+                  hoveredValue={hoveredValue}
+                  fadeOpacity={fadeOpacity}
+                  />
+              </g>
+              <g opacity={hoveredValue? fadeOpacity : 1}> 
+                <Marks 
+                  data={data}
+                  xScale={xScale}
+                  xValue={xValue}
+
+                  yScale={yScale}
+                  yValue={yValue}
+
+                  colorScale={colorScale}
+                  colorValue={colorValue}
+
+                  tooltipFormat={xAxisTickFormat}
+                  circleRadius={circleRadius}
+                /> 
+              </g>
+
+              <Marks 
+                data={filteredData}
+                xScale={xScale}
+                xValue={xValue}
+
+                yScale={yScale}
+                yValue={yValue}
+
+                colorScale={colorScale}
+                colorValue={colorValue}
+
+                tooltipFormat={xAxisTickFormat}
+                circleRadius={circleRadius}
+              /> 
+
+          </g>
+        </svg>
+      </div>
+
+    </>
+   );
+
+  
+};
+
+export default App;  
+
+//REFER TO D3 FORMATTING TO FORMAT YOUR NUMBERS
+
+// THE data.map(d =. <rect) <-- this is producing your marks as seen now probably on a file by itself
+// READ SVG TEXT FOR MORE ON TEXT OPTIONS AND FEATURES
+
