@@ -1,5 +1,10 @@
 # React + Vite
 
+This Vite application is an update to an existing applicatio that had outdated dependencies.
+The application was created with React and D3 to provide data visualization for sales professionals. Sales professionals and data analysts could create personal user profiles and access different parts of the program based
+on neccessity and/or access level. The appliation was intended to provide sales forecasts to facilitate informed decision making and provide visual reports of data to observe sales trends.
+Users could track their personal performance and use feature=s such as peak sales periods to increase efficacy of their sales efforts.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
